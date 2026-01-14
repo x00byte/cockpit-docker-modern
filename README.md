@@ -5,6 +5,7 @@ A modern, intuitive web interface for managing Docker right inside Cockpit. View
 ![Status](https://img.shields.io/badge/status-stable-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Cockpit](https://img.shields.io/badge/cockpit-200%2B-informational)
+<img width="1661" height="807" alt="DockerHub" src="https://github.com/user-attachments/assets/d94bcb17-0493-4e38-98d0-502216fc7c0d" />
 
 ## Features
 
@@ -24,7 +25,7 @@ A modern, intuitive web interface for managing Docker right inside Cockpit. View
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/docker-modern.git
+git clone https://github.com/x00byte/docker-modern.git
 
 # Copy to Cockpit plugins directory
 sudo cp -r docker-modern /usr/share/cockpit/docker-modern
