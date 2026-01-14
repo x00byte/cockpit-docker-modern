@@ -494,99 +494,115 @@ class DockerManager {
 
     async updateRecentActivity() {
         try {
-            // Get recent container events
-            const dockerEvents = await cockpit.spawn(['docker', 'events', '--since', '24h', '--format', 
-                '{{.Time}}|{{.Action}}|{{.Actor.Attributes.name}}|{{.Type}}'], { timeout: 3000 });
-            
             const activityContainer = document.getElementById('recent-activity');
-            const events = dockerEvents.trim().split('\n').filter(line => line.length > 0);
             
-            if (events.length === 0) {
-                activityContainer.innerHTML = '<div class="no-activity">No recent activity</div>';
-                return;
-            }
-            
-            // Take last 10 events and format them
-            const recentEvents = events.slice(-10).reverse();
-            let activityHtml = '<div class="activity-list">';
-            
-            recentEvents.forEach(event => {
-                const [timestamp, action, name, type] = event.split('|');
-                const time = new Date(parseInt(timestamp) * 1000);
-                const timeStr = time.toLocaleTimeString();
+            // Try to get recent container events using a bounded time range
+            try {
+                // Use --until to make docker events finite (don't stream indefinitely)
+                const now = new Date();
+                const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+                const formattedUntil = now.toISOString();
+                const formattedSince = sixHoursAgo.toISOString();
                 
-                let icon = 'fa-circle';
-                let className = 'activity-item';
+                const dockerEvents = await cockpit.spawn(['docker', 'events', 
+                    '--since', formattedSince,
+                    '--until', formattedUntil,
+                    '--format', '{{.Time}}|{{.Action}}|{{.Actor.Attributes.name}}|{{.Type}}']);
                 
-                switch(action) {
-                    case 'start':
-                        icon = 'fa-play';
-                        className += ' success';
-                        break;
-                    case 'stop':
-                        icon = 'fa-stop';
-                        className += ' warning';
-                        break;
-                    case 'create':
-                        icon = 'fa-plus';
-                        className += ' info';
-                        break;
-                    case 'destroy':
-                    case 'remove':
-                        icon = 'fa-trash';
-                        className += ' danger';
-                        break;
-                    case 'pull':
-                        icon = 'fa-download';
-                        className += ' info';
-                        break;
-                    default:
-                        icon = 'fa-circle';
+                const events = dockerEvents.trim().split('\n').filter(line => line.length > 0);
+                
+                if (events.length === 0) {
+                    activityContainer.innerHTML = '<div class="no-activity">No recent activity in the last 6 hours</div>';
+                    return;
                 }
                 
-                activityHtml += `
-                    <div class="${className}">
-                        <div class="activity-icon">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">
-                                <strong>${action}</strong> ${type}: ${name || 'unknown'}
+                // Take last 10 events and format them
+                const recentEvents = events.slice(-10).reverse();
+                let activityHtml = '<div class="activity-list">';
+                
+                recentEvents.forEach(event => {
+                    const parts = event.split('|');
+                    if (parts.length < 4) return;
+                    
+                    const [timestamp, action, name, type] = parts;
+                    // Format timestamp - it's already in ISO format, just take the time part
+                    let timeStr = 'Recently';
+                    if (timestamp && timestamp.includes('T')) {
+                        const timeMatch = timestamp.split('T')[1];
+                        if (timeMatch) {
+                            timeStr = timeMatch.substring(0, 8); // HH:MM:SS
+                        }
+                    }
+                    
+                    let icon = 'fa-circle';
+                    let className = 'activity-item';
+                    
+                    switch(action) {
+                        case 'start':
+                            icon = 'fa-play';
+                            className += ' success';
+                            break;
+                        case 'stop':
+                            icon = 'fa-stop';
+                            className += ' warning';
+                            break;
+                        case 'create':
+                            icon = 'fa-plus';
+                            className += ' info';
+                            break;
+                        case 'destroy':
+                        case 'remove':
+                            icon = 'fa-trash';
+                            className += ' danger';
+                            break;
+                        case 'pull':
+                            icon = 'fa-download';
+                            className += ' info';
+                            break;
+                        default:
+                            icon = 'fa-circle';
+                    }
+                    
+                    activityHtml += `
+                        <div class="${className}">
+                            <div class="activity-icon">
+                                <i class="fas ${icon}"></i>
                             </div>
-                            <div class="activity-time">${timeStr}</div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    <strong>${action}</strong> ${type}: ${name || 'unknown'}
+                                </div>
+                                <div class="activity-time">${timeStr}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                activityHtml += '</div>';
+                activityContainer.innerHTML = activityHtml;
+                
+            } catch (cmdError) {
+                // If docker events fails, show placeholder
+                console.warn('Docker events failed:', cmdError);
+                activityContainer.innerHTML = `
+                    <div class="activity-fallback">
+                        <div class="activity-item info">
+                            <div class="activity-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Activity monitoring active</div>
+                                <div class="activity-time">Now</div>
+                            </div>
                         </div>
                     </div>
                 `;
-            });
-            
-            activityHtml += '</div>';
-            activityContainer.innerHTML = activityHtml;
+            }
             
         } catch (error) {
-            console.error('Failed to get recent activity:', error);
+            console.error('Failed to load recent activity:', error);
             const activityContainer = document.getElementById('recent-activity');
-            activityContainer.innerHTML = `
-                <div class="activity-fallback">
-                    <div class="activity-item info">
-                        <div class="activity-icon">
-                            <i class="fas fa-info-circle"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">System monitoring active</div>
-                            <div class="activity-time">Now</div>
-                        </div>
-                    </div>
-                    <div class="activity-item success">
-                        <div class="activity-icon">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">Dashboard loaded successfully</div>
-                            <div class="activity-time">${new Date().toLocaleTimeString()}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            activityContainer.innerHTML = `<div class="no-activity">Unable to load recent activity</div>`;
         }
     }
 
