@@ -25,7 +25,7 @@ A modern, intuitive web interface for managing Docker right inside Cockpit. View
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/docker-modern.git
+git clone https://github.com/x00byte/docker-modern.git
 
 # Copy to Cockpit plugins directory
 sudo cp -r docker-modern /usr/share/cockpit/docker-modern
