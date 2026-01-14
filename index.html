@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docker Modern</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../base1/cockpit.css">
+    <link rel="stylesheet" href="docker.css">
+</head>
+<body>
+    <div class="docker-app">
+        <!-- Top Navigation Bar -->
+        <nav class="top-navbar">
+            <div class="navbar-brand">
+                <i class="fab fa-docker"></i>
+                <span>Docker Hub</span>
+            </div>
+            <div class="navbar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="containers">
+                    <i class="fas fa-cube"></i>
+                    <span>Containers</span>
+                </a>
+                <a href="#" class="nav-item" data-view="images">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Images</span>
+                </a>
+                <a href="#" class="nav-item" data-view="networks">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Networks</span>
+                </a>
+                <a href="#" class="nav-item" data-view="volumes">
+                    <i class="fas fa-hdd"></i>
+                    <span>Volumes</span>
+                </a>
+            </div>
+            <div class="navbar-actions">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search resources...">
+                </div>
+                <button class="action-btn" id="refresh-btn" title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="btn-text">Refresh</span>
+                </button>
+                <button class="action-btn" id="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                    <span class="btn-text">Settings</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settings-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Settings</h3>
+                    <button class="modal-close" id="close-settings">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label class="setting-label">Theme</label>
+                        <p class="setting-description">Choose your preferred color theme</p>
+                        <div class="theme-preview">
+                            <div class="theme-option active" data-theme="dark">
+                                <div class="theme-color" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);"></div>
+                                <span>Dark Mode</span>
+                            </div>
+                            <div class="theme-option" data-theme="purple">
+                                <div class="theme-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                                <span>Purple Haze</span>
+                            </div>
+                            <div class="theme-option" data-theme="green">
+                                <div class="theme-color" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"></div>
+                                <span>Nature Green</span>
+                            </div>
+                            <div class="theme-option" data-theme="default">
+                                <div class="theme-color" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);"></div>
+                                <span>Blue</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Auto Refresh</label>
+                        <p class="setting-description">Automatically refresh data every few seconds</p>
+                        <div class="setting-control">
+                            <input type="checkbox" id="auto-refresh" checked>
+                            <span>Enable auto refresh</span>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Refresh Interval</label>
+                        <p class="setting-description">How often to refresh data (in seconds)</p>
+                        <div class="setting-control">
+                            <input type="range" id="refresh-interval" min="5" max="60" value="10" step="5">
+                            <span id="interval-display">10s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="page-title">
+                    <h1 id="main-title">Dashboard</h1>
+                    <p class="page-subtitle">Monitor and manage your Docker resources</p>
+                </div>
+                <div class="header-actions" id="main-actions">
+                    <!-- Dynamic action buttons will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="content-body" id="main-content">
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading Docker resources...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../base1/cockpit.js"></script>
+    <script src="docker.js"></script>
+</body>
+</html>

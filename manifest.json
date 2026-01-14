@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "requires": {
+        "cockpit": "200"
+    },
+    "menu": {
+        "index": {
+            "label": "Docker",
+            "order": 45
+        }
+    },
+    "content-security-policy": "script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+}
