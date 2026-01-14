@@ -5,6 +5,7 @@ A modern, intuitive web interface for managing Docker right inside Cockpit. View
 ![Status](https://img.shields.io/badge/status-stable-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Cockpit](https://img.shields.io/badge/cockpit-200%2B-informational)
+<img width="1354" height="807" alt="docker-modernm" src="https://github.com/user-attachments/assets/ee167869-dc8f-4d04-bcc1-3fb5117c0978" />
 
 ## Features
 
